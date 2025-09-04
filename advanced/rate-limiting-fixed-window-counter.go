@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type RateLimiter struct {
+type RateLimiterFixedWindow struct {
 	mu        sync.Mutex
 	count     int
 	limit     int
@@ -13,14 +13,14 @@ type RateLimiter struct {
 	resetTime time.Time
 }
 
-func NewRateLimiter(limit int, window time.Duration) *RateLimiter {
-	return &RateLimiter{
+func NewRateLimiterFixedWindow(limit int, window time.Duration) *RateLimiterFixedWindow {
+	return &RateLimiterFixedWindow{
 		limit:  limit,
 		window: window,
 	}
 }
 
-func (rl *RateLimiter) Allow() bool {
+func (rl *RateLimiterFixedWindow) Allow() bool {
 	rl.mu.Lock()
 	defer rl.mu.Unlock()
 
@@ -39,7 +39,7 @@ func (rl *RateLimiter) Allow() bool {
 
 func main_for_fixed_window() {
 	var wg sync.WaitGroup
-	rateLimiter := NewRateLimiter(5, 1*time.Second)
+	rateLimiter := NewRateLimiterFixedWindow(5, 1*time.Second)
 
 	for range 10 {
 		wg.Add(1)
